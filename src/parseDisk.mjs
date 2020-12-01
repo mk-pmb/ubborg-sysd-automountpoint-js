@@ -19,7 +19,7 @@ const shortBys = {
 };
 function translateShortBy(m, p) {
   return '/dev/disk/by-' + mustBe.nest('Translation of disk device prefix "'
-    + m + '"', shortBys[p]);
+    + m + '"', shortBys[p]) + '/';
 }
 
 
@@ -45,7 +45,7 @@ function parseDisk(spec) {
   let fsOpt = mustPop('str | ary', 'fsOpt', 'defaults,noatime');
   if (Array.isArray(fsOpt)) { fsOpt = fsOpt.join(','); }
 
-  const path = device.replace(/^\//, '').replace(/\//g, '-');
+  const path = mntp.replace(/^\//, '').replace(/\//g, '-');
 
   let trigger = mustPop('str | ary', 'wantedBy', 'multi-user.target');
   if (Array.isArray(trigger)) { trigger = trigger.join(' '); }
