@@ -1,0 +1,37 @@
+{ "name": "ubborg-sysd-automountpoint",
+  "version": "0.0.1",
+  "description": "Easily declare systemd auto-mountpoints.",
+  "keywords": [
+    "automount",
+    "disk",
+    "mount",
+    "systemd",
+    "ubborg"
+  ],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/ubborg-sysd-automountpoint-js/#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/ubborg-sysd-automountpoint-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/ubborg-sysd-automountpoint-js/issues"
+  },
+  "contributors": [],
+
+  "private": false, "license": "ISC",
+
+  "main": "src/amp.mjs",
+  "scripts": { "test": "nodemjs test/all.mjs" },
+  "directories": { "test": "test" },
+
+  "dependencies": {
+  },
+  "devDependencies": {
+    "nodemjs": "^0.1.8"
+  },
+
+
+  "npm vs. BOM = Unexpected token": "-*- coding: UTF-8 -*-"
+}
