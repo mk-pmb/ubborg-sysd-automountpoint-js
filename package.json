@@ -27,6 +27,9 @@
   "directories": { "test": "test" },
 
   "dependencies": {
+    "is-string": "^1.0.4",
+    "objpop": "^0.2.1",
+    "typechecks-pmb": "^0.200620.4"
   },
   "devDependencies": {
     "nodemjs": "^0.1.8"
