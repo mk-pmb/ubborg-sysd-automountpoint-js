@@ -2,13 +2,15 @@
 
 import pathLib from 'path';
 
-import isStr from 'is-string';
 import objPop from 'objpop';
+import is from 'typechecks-pmb';
 import mustBe from 'typechecks-pmb/must-be';
+import compileMountOpts from 'compile-linux-mount-options-from-dict-pmb';
 
 
 function lc(s) { return String(s).toLowerCase(); }
 function translateExactBy(m, b) { return '/dev/disk/by-' + lc(m && b) + '/'; }
+function words(s) { return (s.match(/\S+/g) || []); }
 
 
 const shortBys = {
@@ -25,13 +27,21 @@ function translateShortBy(m, p) {
 
 function normalizeSpec(s) {
   mustBe('obj | nonEmpty str', 'device/mountpoint spec', s);
-  if (isStr(s)) { return { device: s }; }
+  if (is.str(s)) { return { device: s }; }
   return s;
+}
+
+
+function parseFsOpt(orig) {
+  if (Array.isArray(orig)) { return orig.join(','); }
+  if (is.obj(orig)) { return compileMountOpts(orig); }
+  return String(orig);
 }
 
 
 function parseDisk(spec) {
   const mustPop = objPop(normalizeSpec(spec), { mustBe }).mustBe;
+  const descr = mustPop('str', 'descr', '');
 
   let device = mustPop('nonEmpty str', 'device');
   if (!/:|=|\//.test(device)) { device = 'PL:' + device; }
@@ -42,22 +52,25 @@ function parseDisk(spec) {
   if (!mntp) { mntp = '/mnt/' + pathLib.basename(device); }
 
   const fsType = mustPop('nonEmpty str', 'fsType', 'auto');
-  let fsOpt = mustPop('str | ary', 'fsOpt', 'defaults,noatime');
-  if (Array.isArray(fsOpt)) { fsOpt = fsOpt.join(','); }
+  const fsOpt = parseFsOpt(mustPop('str | ary | obj', 'fsOpt',
+    'defaults,noatime'));
 
   const path = mntp.replace(/^\//, '').replace(/\//g, '-');
 
   let trigger = mustPop('str | ary', 'wantedBy', 'multi-user.target');
   if (Array.isArray(trigger)) { trigger = trigger.join(' '); }
 
+  mustPop.done('Unsupported options for ' + device + ' -> ' + mntp);
+
+  const pathPre = '/etc/systemd/system/';
   const unit = {
-    pathPre: '/etc/systemd/system/',
+    pathPre,
     path,
     pathSuf: '.mount',
     mimeType: 'static_ini',
     content: {
       Unit: {
-        Description: mustPop('str', 'descr', ''),
+        Description: descr,
       },
       Mount: {
         What: device,
@@ -71,8 +84,10 @@ function parseDisk(spec) {
     },
   };
 
-  mustPop.done('Unsupported options for ' + device + ' -> ' + mntp);
-  return unit;
+  const symSuf = '.wants/ =-> ../' + unit.path + unit.pathSuf;
+  const enable = words(trigger).map(t => pathPre + t + symSuf);
+
+  return [mntp + '/', unit, ...enable];
 }
 
 

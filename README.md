@@ -34,7 +34,7 @@ Details objects support these properties, most of them optional:
 * `device` (required): Path to the disk device.
 * `mountAt`: Absolute path where to mount the device.
 * `fsType`: Explicit file system selection, in case `auto` isn't good enough.
-* `fsOpt`: File system options (string or array).
+* `fsOpt`: File system options, as string, array or dictionary object.
 * `descr`: User-visible (explanatory) description of the systemd unit.
 * `wantedBy`: Which systemd target to trigger on.
 
